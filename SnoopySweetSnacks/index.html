@@ -80,6 +80,12 @@
       border: none;
       background: #a020f0;
       color: white;
+      
+      /* 🔹 Evita que se pueda seleccionar el botón */
+      user-select: none;       /* CSS estándar */
+      -webkit-user-select: none; /* Safari/Chrome */
+      -ms-user-select: none;     /* IE/Edge */
+      touch-action: manipulation; /* Mejora respuesta táctil */
     }
     #mobileControls button:active { background: #8000c0; }
   </style>
@@ -281,17 +287,3 @@ window.addEventListener("resize", ()=>{
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
