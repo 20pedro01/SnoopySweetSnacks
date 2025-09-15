@@ -126,9 +126,8 @@ const ctx = canvas.getContext("2d");
 
 // Detectar móvil
 function isMobile() { return /Mobi|Android/i.test(navigator.userAgent); }
-if(isMobile()){ document.getElementById("mobileControls").style.display="flex"; }
 
-// Imágenes
+// --- IMÁGENES ---
 const backgroundImg = new Image();
 backgroundImg.src = "f1.jpg";
 const snoopyImg = new Image();
@@ -138,14 +137,14 @@ cherryImg.src = "i2.jpeg";
 const strawberryImg = new Image();
 strawberryImg.src = "i3.jpeg";
 
-// Variables
+// --- VARIABLES ---
 let player, foods, keysPressed, score, misses, lastSpawn;
 const maxFoods = 2, maxMisses = 5;
-const foodSpeedBase = 3, foodSpeedMax = 6, spawnIntervalBase = 1000, spawnIntervalMin = 400;
+const foodSpeedBase = 3, foodSpeedMax = 8, spawnIntervalBase = 1000, spawnIntervalMin = 400;
 let foodSpeed = foodSpeedBase, spawnInterval = spawnIntervalBase;
 
-// Reset del juego
-function resetGame() {
+// Ajuste canvas
+function resizeCanvas() {
   if(isMobile()){
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -153,7 +152,19 @@ function resetGame() {
     canvas.width = 700;
     canvas.height = 500;
   }
-  player = { x: canvas.width/2 - 40, y: canvas.height - 100, width: 80, height: 80, speed: 10 };
+}
+
+// Inicializa el juego
+function resetGame(){
+  resizeCanvas();
+  const scale = canvas.width / 700; // Escala base
+  player = { 
+    width: 80*scale, 
+    height: 80*scale, 
+    speed: 10*scale,
+    x: canvas.width/2 - (80*scale)/2,
+    y: canvas.height - (100*scale)
+  };
   foods = [];
   keysPressed = { left:false, right:false };
   score = 0;
@@ -172,10 +183,13 @@ document.addEventListener("keyup", e=>{
 });
 
 // Controles táctiles
-document.getElementById("leftBtn").addEventListener("touchstart", ()=>keysPressed.left=true);
-document.getElementById("leftBtn").addEventListener("touchend", ()=>keysPressed.left=false);
-document.getElementById("rightBtn").addEventListener("touchstart", ()=>keysPressed.right=true);
-document.getElementById("rightBtn").addEventListener("touchend", ()=>keysPressed.right=false);
+if(isMobile()){
+  document.getElementById("mobileControls").style.display="flex";
+  document.getElementById("leftBtn").addEventListener("touchstart", ()=>keysPressed.left=true);
+  document.getElementById("leftBtn").addEventListener("touchend", ()=>keysPressed.left=false);
+  document.getElementById("rightBtn").addEventListener("touchstart", ()=>keysPressed.right=true);
+  document.getElementById("rightBtn").addEventListener("touchend", ()=>keysPressed.right=false);
+}
 
 // Colisión
 function collide(a,b){
@@ -189,20 +203,31 @@ function updateDifficulty(){
   foodSpeed += Math.sin(Date.now()/500)*0.5;
 }
 
-// Bucle del juego
+// Bucle principal
 function gameLoop(timestamp){
+  // Movimiento
   if(keysPressed.left && player.x>0) player.x -= player.speed;
   if(keysPressed.right && player.x+player.width<canvas.width) player.x += player.speed;
 
   updateDifficulty();
 
+  // Generar frutas
   if(!lastSpawn) lastSpawn = timestamp;
   if(timestamp-lastSpawn>spawnInterval && foods.length<maxFoods){
     let type = Math.random()<0.2?{img:cherryImg,life:true}:{img:strawberryImg,life:false};
-    foods.push({ x: Math.random()*(canvas.width-40), y:-40, width:40, height:40, image:type.img, life:type.life });
+    let foodSize = 40*(canvas.width/700); // escala
+    foods.push({
+      x: Math.random()*(canvas.width-foodSize),
+      y: -foodSize,
+      width: foodSize,
+      height: foodSize,
+      image: type.img,
+      life: type.life
+    });
     lastSpawn = timestamp;
   }
 
+  // Actualizar frutas
   foods.forEach(f => f.y += foodSpeed);
   foods = foods.filter(f=>{
     if(collide(player,f)){
@@ -214,28 +239,35 @@ function gameLoop(timestamp){
     return true;
   });
 
+  // Game over
   if(misses>=maxMisses){
     alert("💔 Game Over! Puntos: "+score);
     resetGame();
   }
 
-  // Dibujar
+  // --- DIBUJAR ---
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.drawImage(backgroundImg,0,0,canvas.width,canvas.height);
   ctx.drawImage(snoopyImg, player.x, player.y, player.width, player.height);
-  foods.forEach(f=>ctx.drawImage(f.image, f.x, f.y, f.width, f.height));
+  foods.forEach(f => ctx.drawImage(f.image, f.x, f.y, f.width, f.height));
 
-  // Título y puntaje
-  ctx.fillStyle="#6a0dad"; ctx.font="28px Comic Sans MS"; ctx.textAlign="center";
-  ctx.fillText("Snoopy sweet snacks", canvas.width/2, 35);
-  ctx.textAlign="left"; ctx.fillStyle="black"; ctx.font="20px Arial";
-  ctx.fillText("Puntos: "+score, 10, 65);
-  ctx.fillText("Vidas: "+(maxMisses-misses),10,90);
+  // Título
+  ctx.fillStyle="#6a0dad";
+  ctx.font = `${28*(canvas.width/700)}px Comic Sans MS`;
+  ctx.textAlign="center";
+  ctx.fillText("Snoopy sweet snacks", canvas.width/2, 35*(canvas.width/700));
+
+  // Puntaje y vidas
+  ctx.textAlign="left";
+  ctx.fillStyle="black";
+  ctx.font = `${20*(canvas.width/700)}px Arial`;
+  ctx.fillText("Puntos: "+score, 10, 65*(canvas.width/700));
+  ctx.fillText("Vidas: "+(maxMisses-misses), 10, 90*(canvas.width/700));
 
   requestAnimationFrame(gameLoop);
 }
 
-// Inicio al aceptar reglas
+// --- INICIO ---
 document.getElementById("btnStart").addEventListener("click", ()=>{
   document.getElementById("intro").style.display="none";
   canvas.style.display="block";
@@ -244,12 +276,12 @@ document.getElementById("btnStart").addEventListener("click", ()=>{
 });
 
 // Ajuste al redimensionar
-window.addEventListener("resize", ()=>{
-  if(isMobile()) resetGame();
-});
+window.addEventListener("resize", resetGame);
 </script>
+
 </body>
 </html>
+
 
 
 
