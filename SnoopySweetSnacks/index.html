@@ -183,13 +183,34 @@ document.addEventListener("keyup", e=>{
 });
 
 // Controles táctiles
-if(isMobile()){
-  document.getElementById("mobileControls").style.display="flex";
-  document.getElementById("leftBtn").addEventListener("touchstart", ()=>keysPressed.left=true);
-  document.getElementById("leftBtn").addEventListener("touchend", ()=>keysPressed.left=false);
-  document.getElementById("rightBtn").addEventListener("touchstart", ()=>keysPressed.right=true);
-  document.getElementById("rightBtn").addEventListener("touchend", ()=>keysPressed.right=false);
-}
+<!-- Controles táctiles -->
+<div id="mobileControls">
+  <button id="leftBtn">⬅️</button>
+  <button id="rightBtn">➡️</button>
+</div>
+
+<style>
+  #mobileControls {
+    display: none;
+    position: fixed;
+    bottom: 100px; /* más arriba */
+    width: 100%;
+    justify-content: center;
+    gap: 80px; /* separa las flechas entre sí */
+    z-index: 1000;
+  }
+  #mobileControls button {
+    width: 110px;   /* más grande */
+    height: 110px;
+    font-size: 40px;
+    border-radius: 15px;
+    border: none;
+    background: #a020f0;
+    color: white;
+  }
+  #mobileControls button:active { background: #8000c0; }
+</style>
+
 
 // Colisión
 function collide(a,b){
@@ -274,6 +295,7 @@ window.addEventListener("resize", resetGame);
 </script>
 </body>
 </html>
+
 
 
 
