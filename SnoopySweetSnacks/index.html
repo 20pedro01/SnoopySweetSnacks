@@ -69,23 +69,22 @@
       bottom: 20px;
       width: 100%;
       justify-content: space-around;
-      padding: 0 30px;
+      padding: 0 40px;
       z-index: 1000;
+      pointer-events: auto;
     }
     #mobileControls button {
-      width: 100px;
-      height: 100px;
-      font-size: 40px;
+      width: 120px;
+      height: 120px;
+      font-size: 50px;
       border-radius: 20px;
       border: none;
       background: #a020f0;
       color: white;
-      
-      /* 🔹 Evita que se pueda seleccionar el botón */
-      user-select: none;       /* CSS estándar */
-      -webkit-user-select: none; /* Safari/Chrome */
-      -ms-user-select: none;     /* IE/Edge */
-      touch-action: manipulation; /* Mejora respuesta táctil */
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     #mobileControls button:active { background: #8000c0; }
   </style>
@@ -160,12 +159,13 @@ function resizeCanvas() {
 function resetGame(){
   resizeCanvas();
   const scale = canvas.width / 700;
+  const mobileButtonHeight = 140 * scale; // espacio de botones y margen
   player = { 
     width: 80*scale, 
     height: 80*scale, 
     speed: 10*scale,
     x: canvas.width/2 - (80*scale)/2,
-    y: isMobile() ? canvas.height - (200*scale) : canvas.height - (100*scale)
+    y: isMobile() ? canvas.height - (mobileButtonHeight + 20 + 80*scale) : canvas.height - (100*scale)
   };
   foods = [];
   keysPressed = { left:false, right:false };
@@ -187,10 +187,13 @@ document.addEventListener("keyup", e=>{
 // Controles táctiles
 if(isMobile()){
   document.getElementById("mobileControls").style.display="flex";
-  document.getElementById("leftBtn").addEventListener("touchstart", ()=>keysPressed.left=true);
-  document.getElementById("leftBtn").addEventListener("touchend", ()=>keysPressed.left=false);
-  document.getElementById("rightBtn").addEventListener("touchstart", ()=>keysPressed.right=true);
-  document.getElementById("rightBtn").addEventListener("touchend", ()=>keysPressed.right=false);
+  const leftBtn = document.getElementById("leftBtn");
+  const rightBtn = document.getElementById("rightBtn");
+
+  leftBtn.addEventListener("touchstart", e => { e.preventDefault(); keysPressed.left = true; });
+  leftBtn.addEventListener("touchend", e => { e.preventDefault(); keysPressed.left = false; });
+  rightBtn.addEventListener("touchstart", e => { e.preventDefault(); keysPressed.right = true; });
+  rightBtn.addEventListener("touchend", e => { e.preventDefault(); keysPressed.right = false; });
 }
 
 // Colisión
@@ -276,11 +279,12 @@ window.addEventListener("resize", ()=>{
   if(gameStarted){
     resizeCanvas();
     const scale = canvas.width / 700;
+    const mobileButtonHeight = 140 * scale;
     player.width = 80*scale;
     player.height = 80*scale;
     player.speed = 10*scale;
     player.x = canvas.width/2 - player.width/2;
-    player.y = isMobile() ? canvas.height - (200*scale) : canvas.height - (100*scale);
+    player.y = isMobile() ? canvas.height - (mobileButtonHeight + 20 + player.height) : canvas.height - (100*scale);
   }
 });
 </script>
