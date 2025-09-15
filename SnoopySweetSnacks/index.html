@@ -184,6 +184,7 @@ document.addEventListener("keyup", e=>{
 
 // Controles táctiles
 <!-- Controles táctiles -->
+<!-- Controles táctiles -->
 <div id="mobileControls">
   <button id="leftBtn">⬅️</button>
   <button id="rightBtn">➡️</button>
@@ -193,16 +194,16 @@ document.addEventListener("keyup", e=>{
   #mobileControls {
     display: none;
     position: fixed;
-    bottom: 100px; /* más arriba */
+    bottom: 120px;        /* más arriba */
     width: 100%;
-    justify-content: center;
-    gap: 80px; /* separa las flechas entre sí */
+    justify-content: space-around; /* separa los botones del borde */
+    padding: 0 60px;      /* deja espacio a los lados */
     z-index: 1000;
   }
   #mobileControls button {
-    width: 110px;   /* más grande */
-    height: 110px;
-    font-size: 40px;
+    width: 120px;         /* más grande */
+    height: 120px;
+    font-size: 45px;
     border-radius: 15px;
     border: none;
     background: #a020f0;
@@ -210,7 +211,6 @@ document.addEventListener("keyup", e=>{
   }
   #mobileControls button:active { background: #8000c0; }
 </style>
-
 
 // Colisión
 function collide(a,b){
@@ -295,6 +295,7 @@ window.addEventListener("resize", resetGame);
 </script>
 </body>
 </html>
+
 
 
 
